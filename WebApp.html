@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary : #004080;
+      --accent  : #009933;
+      --danger  : #ff4d4d;
+      --bg-glass: rgba(255,255,255,0.90);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: 'Comfortaa', cursive;
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f2f5;
+    }
+
+    /* ── Contenedor principal ── */
+    .container {
+      width: 95%;
+      max-width: 900px;
+      height: 95vh;
+      background: var(--bg-glass);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ── Cabecera fija ── */
+    .header-section {
+      padding: 20px;
+      background: rgba(255,255,255,0.5);
+      border-bottom: 1px solid #ddd;
+      flex-shrink: 0;
+    }
+
+    h2 {
+      color: var(--primary);
+      margin: 0 0 4px;
+      font-size: 1.2rem;
+      text-align: center;
+    }
+
+    h3.fecha {
+      color: #555;
+      font-size: 0.9rem;
+      margin: 0 0 14px;
+      text-align: center;
+    }
+
+    .profesor-grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr 1fr;
+      gap: 10px;
+      align-items: end;
+    }
+
+    label {
+      font-size: 0.8rem;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      background: #fff;
+      font-family: inherit;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(0,64,128,0.15);
+    }
+
+    /* ── Área de grupos (scrollable) ── */
+    #gruposContainer {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: 15px;
+      background: rgba(240,240,240,0.4);
+    }
+
+    #gruposContainer::-webkit-scrollbar         { width: 8px; }
+    #gruposContainer::-webkit-scrollbar-track   { background: transparent; }
+    #gruposContainer::-webkit-scrollbar-thumb   { background: #ccc; border-radius: 4px; }
+    #gruposContainer::-webkit-scrollbar-thumb:hover { background: #999; }
+
+    /* ── Tarjeta de grupo ── */
+    .grupo-line {
+      background: #fff;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 12px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border-left: 4px solid var(--primary);
+    }
+
+    .grupo-line:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .grupo-line select.grupo,
+    .grupo-line input.grupo    { flex: 0 0 120px; }
+    .grupo-line select.asignatura,
+    .grupo-line input.asignatura { flex: 1; min-width: 150px; }
+    .grupo-line input.link     { flex: 2; min-width: 200px; }
+
+    .grupo-line input[readonly] {
+      background-color: #f2f2f2;
+      color: #666;
+      border: 1px solid #ddd;
+      font-weight: bold;
+    }
+
+    .status {
+      font-size: 0.85rem;
+      margin-left: 4px;
+      white-space: nowrap;
+    }
+
+    .remove-btn {
+      background: #ffebee;
+      color: var(--danger);
+      border: 1px solid #ffcdd2;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      font-weight: bold;
+      flex-shrink: 0;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .remove-btn:hover { background: var(--danger); color: white; }
+
+    /* ── Estado vacío ── */
+    .empty-hint {
+      text-align: center;
+      color: #999;
+      font-size: 0.85rem;
+      padding: 30px 0;
+    }
+
+    /* ── Footer fijo ── */
+    .footer-section {
+      padding: 15px;
+      background: rgba(255,255,255,0.8);
+      border-top: 1px solid #ddd;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    button.main-action {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 1rem;
+      font-family: inherit;
+      transition: transform 0.1s, filter 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    button.main-action:active { transform: scale(0.98); }
+
+    #addGrupo    { background: #e3f2fd; color: var(--primary); }
+    #addGrupo:hover { background: #bbdefb; }
+
+    #importar    { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(0,64,128,0.3); }
+    #importar:hover { filter: brightness(1.1); }
+    #importar:disabled { background: #ccc; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    #nuevoPanel  { background: transparent; border: 1px solid var(--accent); color: var(--accent); width: 100%; }
+    #nuevoPanel:hover { background: var(--accent); color: white; }
+
+    /* ── Área de mensajes ── */
+    #msgArea {
+      max-height: 140px;
+      overflow-y: auto;
+      font-size: 0.85rem;
+      border-radius: 8px;
+    }
+
+    .msg-success { background: #e8f5e9; color: #2e7d32; padding: 10px; border: 1px solid #c8e6c9; border-radius: 8px; }
+    .msg-error   { background: #ffebee; color: #c62828; padding: 10px; border: 1px solid #ffcdd2; border-radius: 8px; }
+
+    /* ── Responsive móvil ── */
+    @media (max-width: 600px) {
+      .profesor-grid { grid-template-columns: 1fr 1fr; }
+      #profesor-wrapper { grid-column: 1 / -1; }
+
+      .grupo-line {
+        flex-direction: column;
+        align-items: stretch;
+        position: relative;
+        padding-right: 42px;
+      }
+
+      .remove-btn { position: absolute; top: 10px; right: 10px; }
+      .btn-row    { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Cabecera -->
+  <div class="header-section">
+    <h2>Importación de Calificaciones</h2>
+    <h3 class="fecha"><?= fechaManual ?></h3>
+
+    <div class="profesor-grid">
+      <div>
+        <label>Matrícula</label>
+        <input type="text" id="matricula" placeholder="12345" autocomplete="off">
+      </div>
+
+      <div id="profesor-wrapper">
+        <label>Docente</label>
+        <input type="text" id="profesor" placeholder="Esperando matrícula…"
+               readonly style="background:#f9f9f9; color:#555;">
+      </div>
+
+      <div>
+        <label>Tipo</label>
+        <select id="tipoGrupo">
+          <option value="">Elegir…</option>
+          <option value="Español">Español</option>
+          <option value="Ingles">Inglés</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Área de grupos -->
+  <div id="gruposContainer">
+    <p class="empty-hint">Ingresa tu matrícula para cargar los grupos asignados.</p>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer-section">
+    <div class="btn-row">
+      <button id="addGrupo" class="main-action">+ Grupo</button>
+      <button id="importar" class="main-action">IMPORTAR DATOS</button>
+    </div>
+
+    <div id="msgArea"></div>
+
+    <button id="nuevoPanel" class="main-action" style="padding:8px; font-size:0.8rem;">
+      Limpiar / Nuevo Panel
+    </button>
+  </div>
+
+</div>
+
+<script>
+  // ── Imagen de fondo ──────────────────────────────────────────────
+  google.script.run.withSuccessHandler(function(url) {
+    document.body.style.backgroundImage = "url('" + url + "')";
+  }).getImageUrl();
+
+  var gruposContainer = document.getElementById('gruposContainer');
+  var tipoSelect      = document.getElementById('tipoGrupo');
+  var msgArea         = document.getElementById('msgArea');
+  var MAX_GRUPOS      = 28;
+
+  // ── Helpers UI ──────────────────────────────────────────────────
+  function showMsg(msg, tipo) {
+    msgArea.innerHTML = '<div class="msg-' + (tipo === 'error' ? 'error' : 'success') + '">' + msg + '</div>';
+  }
+
+  function clearGrupos() {
+    gruposContainer.innerHTML = '<p class="empty-hint">Ingresa tu matrícula para cargar los grupos asignados.</p>';
+  }
+
+  function grupoCount() {
+    return gruposContainer.querySelectorAll('.grupo-line').length;
+  }
+
+  // ── Búsqueda por matrícula ───────────────────────────────────────
+  function buscarProfesor() {
+    var mat = document.getElementById('matricula').value.trim();
+    if (!mat) { document.getElementById('profesor').value = ''; return; }
+
+    document.getElementById('profesor').value = 'Buscando carga académica…';
+    clearGrupos();
+
+    google.script.run.withSuccessHandler(function(res) {
+      if (!res.ok) {
+        document.getElementById('profesor').value = '';
+        document.getElementById('profesor').placeholder = res.error;
+        return;
+      }
+
+      document.getElementById('profesor').value = res.nombre;
+      if (res.tipoPredominante) tipoSelect.value = res.tipoPredominante;
+
+      if (res.aviso) showMsg(res.aviso, 'error');
+
+      if (res.carga && res.carga.length > 0) {
+        gruposContainer.innerHTML = '';
+        res.carga.forEach(function(item) {
+          agregarGrupo({ grupo: item.grupo, asignatura: item.materia, esAutomatico: true });
+        });
+        showMsg('✅ Se cargaron ' + res.carga.length + ' grupos asignados.', 'success');
+      } else {
+        gruposContainer.innerHTML = '';
+        showMsg('⚠️ Sin materias asignadas en la Matriz. Agrégalas manualmente.', 'error');
+        agregarGrupo({ esAutomatico: false });
+      }
+    }).obtenerCargaPorMatricula(mat);
+  }
+
+  document.getElementById('matricula').addEventListener('change', buscarProfesor);
+
+  // ── Llenar selects manuales ──────────────────────────────────────
+  function actualizarSelectsManuales() {
+    var tipo = tipoSelect.value;
+    if (!tipo) return;
+
+    document.querySelectorAll('.grupo-line').forEach(function(div) {
+      var sg = div.querySelector('select.grupo');
+      var sa = div.querySelector('select.asignatura');
+      if (!sg || !sa) return;
+
+      google.script.run.withSuccessHandler(function(grupos) {
+        var val = sg.value;
+        sg.innerHTML = '<option value="">Grupo…</option>';
+        grupos.forEach(function(g) {
+          var o = document.createElement('option');
+          o.value = o.textContent = g;
+          sg.appendChild(o);
+        });
+        if (val) sg.value = val;
+      }).obtenerGrupos(tipo);
+
+      google.script.run.withSuccessHandler(function(mats) {
+        var val = sa.value;
+        sa.innerHTML = '<option value="">Asignatura…</option>';
+        mats.forEach(function(m) {
+          var o = document.createElement('option');
+          o.value = o.textContent = m;
+          sa.appendChild(o);
+        });
+        if (val) sa.value = val;
+      }).obtenerAsignaturas(tipo);
+    });
+  }
+
+  tipoSelect.addEventListener('change', actualizarSelectsManuales);
+
+  // ── Validar links duplicados ─────────────────────────────────────
+  function validarDuplicados() {
+    var links = [];
+    var hasDup = false;
+    document.querySelectorAll('.grupo-line').forEach(function(div) {
+      var li  = div.querySelector('.link');
+      var sp  = div.querySelector('.status');
+      var val = li.value.trim();
+
+      if (sp.textContent === '⚠️ Duplicado') { sp.textContent = ''; li.style.borderColor = '#ccc'; }
+
+      if (val) {
+        if (links.includes(val)) {
+          sp.textContent = '⚠️ Duplicado';
+          sp.style.color = 'var(--danger)';
+          li.style.borderColor = 'var(--danger)';
+          hasDup = true;
+        } else {
+          links.push(val);
+        }
+      }
+    });
+    return hasDup;
+  }
+
+  // ── Agregar fila de grupo ────────────────────────────────────────
+  function agregarGrupo(datos) {
+    datos = datos || {};
+
+    if (grupoCount() >= MAX_GRUPOS) {
+      alert('Límite de ' + MAX_GRUPOS + ' grupos alcanzado.');
+      return;
+    }
+
+    // Quitar hint vacío si existe
+    var hint = gruposContainer.querySelector('.empty-hint');
+    if (hint) hint.remove();
+
+    var div = document.createElement('div');
+    div.className = 'grupo-line';
+
+    var htmlGrupo, htmlMat;
+    if (datos.esAutomatico) {
+      htmlGrupo = '<input type="text" class="grupo" value="' + datos.grupo + '" readonly title="' + datos.grupo + '">';
+      htmlMat   = '<input type="text" class="asignatura" value="' + datos.asignatura + '" readonly title="' + datos.asignatura + '">';
+    } else {
+      htmlGrupo = '<select class="grupo"><option value="">Grupo…</option></select>';
+      htmlMat   = '<select class="asignatura"><option value="">Asignatura…</option></select>';
+    }
+
+    div.innerHTML =
+      htmlGrupo + htmlMat +
+      '<input type="text" class="link" placeholder="Pegar link del Sheet">' +
+      '<span class="status"></span>' +
+      '<div class="remove-btn" title="Eliminar fila">✕</div>';
+
+    gruposContainer.appendChild(div);
+    div.scrollIntoView({ behavior: 'smooth', block: 'end' });
+
+    // Eliminar fila
+    div.querySelector('.remove-btn').addEventListener('click', function() {
+      div.style.opacity = '0';
+      div.style.transition = 'opacity 0.2s';
+      setTimeout(function() { div.remove(); validarDuplicados(); }, 200);
+    });
+
+    // Validar link al salir del campo
+    var linkInput = div.querySelector('.link');
+    linkInput.addEventListener('blur', function() {
+      var link   = linkInput.value.trim();
+      var status = div.querySelector('.status');
+
+      if (!link) { status.textContent = ''; linkInput.style.borderColor = '#ccc'; return; }
+
+      status.textContent = '🔍';
+      google.script.run.withSuccessHandler(function(res) {
+        if (res.ok) {
+          status.textContent = '✅';
+          status.title       = res.nombreHoja;
+          linkInput.style.borderColor = 'var(--accent)';
+        } else {
+          status.textContent = '❌';
+          status.title       = res.error;
+          linkInput.style.borderColor = 'var(--danger)';
+        }
+        validarDuplicados();
+      }).validarLink(link);
+    });
+
+    // Llenar selects si ya hay tipo elegido
+    if (!datos.esAutomatico && tipoSelect.value) {
+      setTimeout(actualizarSelectsManuales, 100);
+    }
+  }
+
+  document.getElementById('addGrupo').addEventListener('click', function() {
+    agregarGrupo({ esAutomatico: false });
+  });
+
+  // ── Importar ─────────────────────────────────────────────────────
+  document.getElementById('importar').addEventListener('click', function() {
+    if (validarDuplicados()) {
+      showMsg('Corrige los links duplicados antes de importar.', 'error');
+      return;
+    }
+
+    var profesor = document.getElementById('profesor').value.trim();
+    if (!profesor || profesor.startsWith('Buscando')) {
+      showMsg('Falta identificar al profesor. Revisa la matrícula.', 'error');
+      return;
+    }
+
+    var tipoGrupo = tipoSelect.value;
+    if (!tipoGrupo) {
+      showMsg('Selecciona si es Español o Inglés.', 'error');
+      return;
+    }
+
+    var gruposLinks = [];
+    document.querySelectorAll('.grupo-line').forEach(function(div) {
+      var grupo      = div.querySelector('.grupo').value.trim();
+      var asignatura = div.querySelector('.asignatura').value.trim();
+      var link       = div.querySelector('.link').value.trim();
+      if (grupo && asignatura && link) gruposLinks.push({ grupo: grupo, asignatura: asignatura, link: link });
+    });
+
+    if (gruposLinks.length === 0) {
+      showMsg('No hay grupos completos para importar.', 'error');
+      return;
+    }
+
+    var btn          = document.getElementById('importar');
+    var originalHTML = btn.innerHTML;
+    btn.disabled     = true;
+    btn.innerHTML    = '⏳ PROCESANDO…';
+    msgArea.innerHTML = '';
+
+    google.script.run
+      .withSuccessHandler(function(res) {
+        msgArea.innerHTML =
+          '<div class="msg-success"><b>' + res.mensajeFinal + '</b></div>' +
+          '<div style="font-size:0.8rem;margin-top:5px;color:#555;">' +
+          res.resumen.replace(/\n/g, '<br>') + '</div>';
+        btn.disabled  = false;
+        btn.innerHTML = originalHTML;
+      })
+      .withFailureHandler(function(err) {
+        showMsg('Error de conexión: ' + err.message, 'error');
+        btn.disabled  = false;
+        btn.innerHTML = originalHTML;
+      })
+      .importarGruposWeb({ profesor: profesor, gruposLinks: gruposLinks, tipoGrupo: tipoGrupo });
+  });
+
+  // ── Limpiar ───────────────────────────────────────────────────────
+  document.getElementById('nuevoPanel').addEventListener('click', function() {
+    if (confirm('¿Borrar formulario y empezar de cero?')) {
+      document.getElementById('matricula').value = '';
+      document.getElementById('profesor').value  = '';
+      tipoSelect.value  = '';
+      msgArea.innerHTML = '';
+      clearGrupos();
+    }
+  });
+</script>
+
+</body>
+</html>
