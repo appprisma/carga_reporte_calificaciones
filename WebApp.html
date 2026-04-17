@@ -9,6 +9,10 @@
       --primary : #004080;
       --accent  : #009933;
       --danger  : #ff4d4d;
+      --warning : #F59E0B;
+      --critical: #EF4444;
+      --success : #10B981;
+      --info    : #3B82F6;
       --bg-glass: rgba(255,255,255,0.90);
     }
 
@@ -46,7 +50,112 @@
       position: relative;
     }
 
-    /* ── Cabecera fija ── */
+    /* ── Pantallas (SPA) ── */
+    .screen {
+      display: none;
+      flex: 1;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    /* ════════════════════════════════════════════════════════════ */
+    /* PANTALLA 1: MENÚ PRINCIPAL (2 bloques) */
+    /* ════════════════════════════════════════════════════════════ */
+    #screenMenu {
+      padding: 40px 20px;
+      justify-content: center;
+      align-items: center;
+      gap: 30px;
+    }
+
+    .menu-header {
+      text-align: center;
+      margin-bottom: 20px;
+      width: 100%;
+    }
+
+    .menu-header h1 {
+      color: var(--primary);
+      margin: 0;
+      font-size: 2rem;
+    }
+
+    .menu-header p {
+      color: #666;
+      margin: 5px 0 0;
+      font-size: 0.9rem;
+    }
+
+    .blocks-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      width: 100%;
+      max-width: 700px;
+    }
+
+    .block {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      border-left: 5px solid transparent;
+    }
+
+    .block:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+
+    .block.cargar {
+      border-left-color: var(--primary);
+    }
+
+    .block.cargar:hover {
+      background: #f0f4ff;
+    }
+
+    .block.consultar {
+      border-left-color: var(--accent);
+    }
+
+    .block.consultar:hover {
+      background: #f0fff4;
+    }
+
+    .block-icon {
+      font-size: 3rem;
+      margin-bottom: 15px;
+    }
+
+    .block-title {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: var(--primary);
+      margin: 0;
+    }
+
+    .block.consultar .block-title {
+      color: var(--accent);
+    }
+
+    .block-desc {
+      font-size: 0.85rem;
+      color: #666;
+      margin-top: 8px;
+    }
+
+    /* ════════════════════════════════════════════════════════════ */
+    /* PANTALLA 2: CARGAR REPORTES (existente) */
+    /* ════════════════════════════════════════════════════════════ */
+
     .header-section {
       padding: 20px;
       background: rgba(255,255,255,0.5);
@@ -222,6 +331,15 @@
     #nuevoPanel  { background: transparent; border: 1px solid var(--accent); color: var(--accent); width: 100%; }
     #nuevoPanel:hover { background: var(--accent); color: white; }
 
+    .btn-back {
+      background: #e5e5e5;
+      color: #333;
+    }
+
+    .btn-back:hover {
+      background: #d0d0d0;
+    }
+
     /* ── Área de mensajes ── */
     #msgArea {
       max-height: 140px;
@@ -233,10 +351,305 @@
     .msg-success { background: #e8f5e9; color: #2e7d32; padding: 10px; border: 1px solid #c8e6c9; border-radius: 8px; }
     .msg-error   { background: #ffebee; color: #c62828; padding: 10px; border: 1px solid #ffcdd2; border-radius: 8px; }
 
+    /* ════════════════════════════════════════════════════════════ */
+    /* PANTALLA 3: CONSULTAR REPORTE - LOGIN */
+    /* ════════════════════════════════════════════════════════════ */
+
+    #screenConsultarLogin {
+      padding: 40px 20px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .login-form {
+      background: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .login-form h2 {
+      text-align: center;
+      color: var(--primary);
+      margin: 0 0 30px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-family: inherit;
+    }
+
+    .login-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 25px;
+    }
+
+    .btn-login {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 1rem;
+      font-family: inherit;
+      transition: all 0.3s;
+    }
+
+    .btn-login-submit {
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn-login-submit:hover {
+      filter: brightness(1.1);
+    }
+
+    .btn-login-back {
+      background: #e5e5e5;
+      color: #333;
+    }
+
+    .btn-login-back:hover {
+      background: #d0d0d0;
+    }
+
+    #loginMsg {
+      margin-top: 15px;
+      font-size: 0.9rem;
+      min-height: 30px;
+    }
+
+    /* ════════════════════════════════════════════════════════════ */
+    /* PANTALLA 4: REPORTE DE PROFESOR */
+    /* ════════════════════════════════════════════════════════════ */
+
+    #screenReporte {
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .reporte-header {
+      padding: 20px;
+      background: rgba(255,255,255,0.5);
+      border-bottom: 1px solid #ddd;
+      flex-shrink: 0;
+    }
+
+    .reporte-header h2 {
+      margin: 0 0 5px;
+      color: var(--primary);
+    }
+
+    .reporte-header .prof-info {
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .reporte-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .reporte-section {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      overflow-y: auto;
+    }
+
+    .reporte-section h3 {
+      margin: 0 0 15px;
+      color: var(--primary);
+      font-size: 1.1rem;
+      border-bottom: 2px solid #f0f0f0;
+      padding-bottom: 10px;
+    }
+
+    .alumno-card {
+      background: #f9f9f9;
+      padding: 12px;
+      margin-bottom: 12px;
+      border-radius: 10px;
+      border-left: 4px solid;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .alumno-card:hover {
+      background: #f0f0f0;
+      transform: translateX(3px);
+    }
+
+    .alumno-card.critico {
+      border-left-color: var(--critical);
+    }
+
+    .alumno-card.riesgo {
+      border-left-color: var(--warning);
+    }
+
+    .alumno-card.satisfactorio {
+      border-left-color: var(--success);
+    }
+
+    .alumno-card.excelente {
+      border-left-color: var(--info);
+    }
+
+    .alumno-nombre {
+      font-weight: bold;
+      font-size: 0.95rem;
+      margin-bottom: 5px;
+    }
+
+    .alumno-info {
+      font-size: 0.8rem;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .alumno-estado {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+
+    .grupo-item {
+      background: #f9f9f9;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      border-left: 3px solid var(--success);
+    }
+
+    .grupo-item-title {
+      font-weight: bold;
+      color: var(--primary);
+      margin-bottom: 5px;
+    }
+
+    .grupo-item-mats {
+      font-size: 0.85rem;
+      color: #666;
+    }
+
+    .reporte-footer {
+      padding: 15px;
+      background: rgba(255,255,255,0.8);
+      border-top: 1px solid #ddd;
+      display: flex;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    /* Modal para comentario */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+
+    .modal-content h3 {
+      margin: 0 0 15px;
+      color: var(--primary);
+    }
+
+    .modal-content textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .modal-buttons button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .btn-guardar {
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn-cancelar {
+      background: #e5e5e5;
+      color: #333;
+    }
+
     /* ── Responsive móvil ── */
-    @media (max-width: 600px) {
-      .profesor-grid { grid-template-columns: 1fr 1fr; }
-      #profesor-wrapper { grid-column: 1 / -1; }
+    @media (max-width: 768px) {
+      .reporte-body {
+        grid-template-columns: 1fr;
+      }
+
+      .blocks-container {
+        grid-template-columns: 1fr;
+      }
+
+      .profesor-grid {
+        grid-template-columns: 1fr;
+      }
 
       .grupo-line {
         flex-direction: column;
@@ -245,8 +658,15 @@
         padding-right: 42px;
       }
 
-      .remove-btn { position: absolute; top: 10px; right: 10px; }
-      .btn-row    { flex-direction: column; }
+      .remove-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+      }
+
+      .btn-row {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
@@ -254,53 +674,156 @@
 
 <div class="container">
 
-  <!-- Cabecera -->
-  <div class="header-section">
-    <h2>Importación de Calificaciones</h2>
-    <h3 class="fecha"><?= fechaManual ?></h3>
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- PANTALLA 1: MENÚ PRINCIPAL -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <div id="screenMenu" class="screen active">
+    <div class="menu-header">
+      <h1>📚 IBIME Calificaciones</h1>
+      <p>Sistema de Reportes y Consultas</p>
+    </div>
 
-    <div class="profesor-grid">
-      <div>
-        <label>Matrícula</label>
-        <input type="text" id="matricula" placeholder="12345" autocomplete="off">
+    <div class="blocks-container">
+      <div class="block cargar" onclick="irACargar()">
+        <div class="block-icon">📤</div>
+        <h3 class="block-title">Cargar Reportes</h3>
+        <p class="block-desc">Importa calificaciones desde Classroom</p>
       </div>
 
-      <div id="profesor-wrapper">
-        <label>Docente</label>
-        <input type="text" id="profesor" placeholder="Esperando matrícula…"
-               readonly style="background:#f9f9f9; color:#555;">
-      </div>
-
-      <div>
-        <label>Tipo</label>
-        <select id="tipoGrupo">
-          <option value="">Elegir…</option>
-          <option value="Español">Español</option>
-          <option value="Ingles">Inglés</option>
-        </select>
+      <div class="block consultar" onclick="irAConsultarLogin()">
+        <div class="block-icon">📊</div>
+        <h3 class="block-title">Consultar Reporte</h3>
+        <p class="block-desc">Revisa el desempeño de tus alumnos</p>
       </div>
     </div>
   </div>
 
-  <!-- Área de grupos -->
-  <div id="gruposContainer">
-    <p class="empty-hint">Ingresa tu matrícula para cargar los grupos asignados.</p>
-  </div>
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- PANTALLA 2: CARGAR REPORTES (existente) -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <div id="screenCargar" class="screen">
+    <div class="header-section">
+      <h2>Importación de Calificaciones</h2>
+      <h3 class="fecha"><?= fechaManual ?></h3>
 
-  <!-- Footer -->
-  <div class="footer-section">
-    <div class="btn-row">
-      <button id="addGrupo" class="main-action">+ Grupo</button>
-      <button id="importar" class="main-action">IMPORTAR DATOS</button>
+      <div class="profesor-grid">
+        <div>
+          <label>Matrícula</label>
+          <input type="text" id="matricula" placeholder="12345" autocomplete="off">
+        </div>
+
+        <div id="profesor-wrapper">
+          <label>Docente</label>
+          <input type="text" id="profesor" placeholder="Esperando matrícula…"
+                 readonly style="background:#f9f9f9; color:#555;">
+        </div>
+
+        <div>
+          <label>Tipo</label>
+          <select id="tipoGrupo">
+            <option value="">Elegir…</option>
+            <option value="Español">Español</option>
+            <option value="Ingles">Inglés</option>
+          </select>
+        </div>
+      </div>
     </div>
 
-    <div id="msgArea"></div>
+    <div id="gruposContainer">
+      <p class="empty-hint">Ingresa tu matrícula para cargar los grupos asignados.</p>
+    </div>
 
-    <button id="nuevoPanel" class="main-action" style="padding:8px; font-size:0.8rem;">
-      Limpiar / Nuevo Panel
-    </button>
+    <div class="footer-section">
+      <div class="btn-row">
+        <button id="addGrupo" class="main-action">+ Grupo</button>
+        <button id="importar" class="main-action">IMPORTAR DATOS</button>
+      </div>
+
+      <div id="msgArea"></div>
+
+      <div class="btn-row">
+        <button id="nuevoPanel" class="main-action" style="padding:8px; font-size:0.8rem;">
+          Limpiar / Nuevo Panel
+        </button>
+        <button class="main-action btn-back" style="padding:8px; font-size:0.8rem;" onclick="volverAlMenu()">
+          ← Volver
+        </button>
+      </div>
+    </div>
   </div>
 
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- PANTALLA 3: LOGIN PARA CONSULTAR -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <div id="screenConsultarLogin" class="screen">
+    <div class="login-form">
+      <h2>Consulta tu Reporte</h2>
+
+      <div class="form-group">
+        <label for="loginMatricula">Matrícula</label>
+        <input type="text" id="loginMatricula" placeholder="12345" autocomplete="off">
+      </div>
+
+      <div class="form-group">
+        <label for="loginCorreo">Correo Institucional</label>
+        <input type="email" id="loginCorreo" placeholder="profesor@ibime.edu.mx" autocomplete="off">
+      </div>
+
+      <div id="loginMsg"></div>
+
+      <div class="login-buttons">
+        <button class="btn-login btn-login-submit" onclick="validarLoginProfe()">Ingresar</button>
+        <button class="btn-login btn-login-back" onclick="volverAlMenu()">Atrás</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════════════════════════════════════════════════════════════════ -->
+  <!-- PANTALLA 4: REPORTE DEL PROFESOR -->
+  <!-- ═════════════════════════════════════════════════════════════════ -->
+  <div id="screenReporte" class="screen">
+    <div class="reporte-header">
+      <h2 id="reporteProfesor">Reporte - Prof. Nombre</h2>
+      <div class="prof-info">Alumnos ordenados por estado académico</div>
+    </div>
+
+    <div class="reporte-body">
+      <!-- Sección izquierda: Alumnos -->
+      <div class="reporte-section">
+        <h3>👥 Alumnos Cargados</h3>
+        <div id="listadoAlumnos">
+          <p class="empty-hint">Cargando alumnos...</p>
+        </div>
+      </div>
+
+      <!-- Sección derecha: Grupos -->
+      <div class="reporte-section">
+        <h3>📋 Resumen de Grupos</h3>
+        <div id="listadoGrupos">
+          <p class="empty-hint">Cargando grupos...</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="reporte-footer">
+      <button class="main-action btn-back" style="padding:10px; font-size:0.9rem;" onclick="volverAlMenu()">
+        ← Volver al Menú
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Modal para comentarios -->
+<div id="modalComentario" class="modal">
+  <div class="modal-content">
+    <h3>Comentario sobre <span id="alumnoComentarioNombre"></span></h3>
+    <textarea id="textComentario" placeholder="Escribe tu comentario aquí (máx 500 caracteres)..."></textarea>
+    <div class="modal-buttons">
+      <button class="btn-guardar" onclick="guardarComentarioModal()">Guardar</button>
+      <button class="btn-cancelar" onclick="cerrarModal()">Cancelar</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -309,25 +832,216 @@
     document.body.style.backgroundImage = "url('" + url + "')";
   }).getImageUrl();
 
-  var gruposContainer = document.getElementById('gruposContainer');
-  var tipoSelect      = document.getElementById('tipoGrupo');
-  var msgArea         = document.getElementById('msgArea');
-  var MAX_GRUPOS      = 28;
+  // ── Estado Global ─────────────────────────────────────────────────
+  var estadoGlobal = {
+    pantalaActual: "menu",
+    profesorLogin: null,
+    alumnoComentarioActual: null,
+    tipoGrupo: "Español",
+    gruposContainer: document.getElementById('gruposContainer'),
+    msgArea: document.getElementById('msgArea'),
+    MAX_GRUPOS: 28
+  };
 
-  // ── Helpers UI ──────────────────────────────────────────────────
+  // ════════════════════════════════════════════════════════════════════
+  // NAVEGACIÓN ENTRE PANTALLAS
+  // ════════════════════════════════════════════════════════════════════
+
+  function mostrarPantalla(pantalla) {
+    document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+    document.getElementById('screen' + pantalla).classList.add('active');
+    estadoGlobal.pantalaActual = pantalla;
+  }
+
+  function irACargar() {
+    mostrarPantalla('Cargar');
+  }
+
+  function irAConsultarLogin() {
+    mostrarPantalla('ConsultarLogin');
+    document.getElementById('loginMatricula').focus();
+  }
+
+  function volverAlMenu() {
+    mostrarPantalla('Menu');
+    limpiarFormularios();
+  }
+
+  function limpiarFormularios() {
+    document.getElementById('matricula').value = '';
+    document.getElementById('profesor').value = '';
+    document.getElementById('tipoGrupo').value = '';
+    document.getElementById('loginMatricula').value = '';
+    document.getElementById('loginCorreo').value = '';
+    document.getElementById('loginMsg').innerHTML = '';
+    estadoGlobal.gruposContainer.innerHTML = '<p class="empty-hint">Ingresa tu matrícula para cargar los grupos asignados.</p>';
+  }
+
+  // ════════════════════════════════════════════════════════════════════
+  // VALIDACIÓN DE LOGIN
+  // ════════════════════════════════════════════════════════════════════
+
+  function validarLoginProfe() {
+    var matricula = document.getElementById('loginMatricula').value.trim();
+    var correo = document.getElementById('loginCorreo').value.trim();
+    var msgDiv = document.getElementById('loginMsg');
+
+    if (!matricula || !correo) {
+      msgDiv.innerHTML = '<div class="msg-error">⚠️ Completa ambos campos</div>';
+      return;
+    }
+
+    msgDiv.innerHTML = '<div class="msg-success">⏳ Validando...</div>';
+
+    google.script.run.withSuccessHandler(function(res) {
+      if (res.ok) {
+        estadoGlobal.profesorLogin = res;
+        cargarReporteProfesor(matricula);
+      } else {
+        msgDiv.innerHTML = '<div class="msg-error">❌ ' + res.error + '</div>';
+      }
+    }).validarLoginProfesor(matricula, correo);
+  }
+
+  // ════════════════════════════════════════════════════════════════════
+  // CARGAR REPORTE DEL PROFESOR
+  // ════════════════════════════════════════════════════════════════════
+
+  function cargarReporteProfesor(matricula) {
+    google.script.run.withSuccessHandler(function(res) {
+      if (!res.ok) {
+        alert('Error: ' + res.error);
+        volverAlMenu();
+        return;
+      }
+
+      // Actualizar encabezado
+      document.getElementById('reporteProfesor').textContent = 'Reporte - ' + estadoGlobal.profesorLogin.nombre;
+
+      // Llenar lista de alumnos
+      var listadoDiv = document.getElementById('listadoAlumnos');
+      if (res.alumnos.length === 0) {
+        listadoDiv.innerHTML = '<p class="empty-hint">No hay alumnos cargados aún.</p>';
+      } else {
+        listadoDiv.innerHTML = '';
+        res.alumnos.forEach(function(al) {
+          var estado = obtenerEstadoUI(al.estado.texto);
+          var html = 
+            '<div class="alumno-card ' + estado.clase + '">' +
+            '  <div class="alumno-nombre">' + al.estado.emoji + ' ' + al.nombre + '</div>' +
+            '  <div class="alumno-info">' +
+            '    Grupo: <strong>' + al.grupo + '</strong> | ' +
+            '    Promedio: <strong>' + al.promedio.toFixed(2) + '/10</strong>' +
+            '  </div>' +
+            '  <div class="alumno-estado" style="background:' + al.estado.color + '; color:white;">' +
+            '    ' + al.estado.texto +
+            '  </div>' +
+            '  <div style="margin-top:10px; font-size:0.8rem;">' +
+            '    <button onclick="abrirModalComentario(\'' + al.correo + '\', \'' + al.nombre.replace(/'/g, "\\'") + '\')" ' +
+            '            style="background:#f0f0f0; border:1px solid #ddd; padding:5px 10px; border-radius:5px; cursor:pointer;">' +
+            '      💬 Comentario' +
+            '    </button>' +
+            '  </div>' +
+            '</div>';
+          listadoDiv.innerHTML += html;
+        });
+      }
+
+      // Llenar resumen de grupos
+      var gruposDiv = document.getElementById('listadoGrupos');
+      if (res.gruposResumen.length === 0) {
+        gruposDiv.innerHTML = '<p class="empty-hint">No hay grupos cargados.</p>';
+      } else {
+        gruposDiv.innerHTML = '';
+        res.gruposResumen.forEach(function(grp) {
+          var html =
+            '<div class="grupo-item">' +
+            '  <div class="grupo-item-title">' + grp.grupo + ' ' + grp.status + '</div>' +
+            '  <div class="grupo-item-mats">' +
+            '    Materias: ' + grp.materias.join(', ') +
+            '  </div>' +
+            '</div>';
+          gruposDiv.innerHTML += html;
+        });
+      }
+
+      mostrarPantalla('Reporte');
+
+    }).obtenerReporteProfesor(matricula);
+  }
+
+  function obtenerEstadoUI(texto) {
+    var map = {
+      "Excelente": { clase: "excelente", icon: "😎" },
+      "Satisfactorio": { clase: "satisfactorio", icon: "🙂" },
+      "En Riesgo": { clase: "riesgo", icon: "⚠️" },
+      "Crítico": { clase: "critico", icon: "😓" }
+    };
+    return map[texto] || { clase: "", icon: "?" };
+  }
+
+  // ════════════════════════════════════════════════════════════════════
+  // MODAL DE COMENTARIOS
+  // ════════════════════════════════════════════════════════════════════
+
+  function abrirModalComentario(correo, nombre) {
+    estadoGlobal.alumnoComentarioActual = { correo: correo, nombre: nombre };
+    document.getElementById('alumnoComentarioNombre').textContent = nombre;
+    document.getElementById('textComentario').value = '';
+    document.getElementById('modalComentario').classList.add('active');
+  }
+
+  function cerrarModal() {
+    document.getElementById('modalComentario').classList.remove('active');
+    estadoGlobal.alumnoComentarioActual = null;
+  }
+
+  function guardarComentarioModal() {
+    var comentario = document.getElementById('textComentario').value.trim();
+    if (!comentario) {
+      alert('Escribe un comentario primero');
+      return;
+    }
+
+    var btn = event.target;
+    btn.disabled = true;
+    btn.textContent = '⏳ Guardando...';
+
+    google.script.run.withSuccessHandler(function(res) {
+      btn.disabled = false;
+      btn.textContent = 'Guardar';
+
+      if (res.ok) {
+        alert('✅ ' + res.mensaje);
+        cerrarModal();
+      } else {
+        alert('❌ ' + res.error);
+      }
+    }).guardarComentarioAlumno(
+      estadoGlobal.profesorLogin.matricula,
+      estadoGlobal.alumnoComentarioActual.correo,
+      comentario
+    );
+  }
+
+  // ═══════���════════════════════════════════════════════════════════════
+  // RESTO DEL CÓDIGO (búsqueda profesor, importar, etc - IGUAL AL ANTERIOR)
+  // ════════════════════════════════════════════════════════════════════
+
+  var tipoSelect = document.getElementById('tipoGrupo');
+
   function showMsg(msg, tipo) {
-    msgArea.innerHTML = '<div class="msg-' + (tipo === 'error' ? 'error' : 'success') + '">' + msg + '</div>';
+    estadoGlobal.msgArea.innerHTML = '<div class="msg-' + (tipo === 'error' ? 'error' : 'success') + '">' + msg + '</div>';
   }
 
   function clearGrupos() {
-    gruposContainer.innerHTML = '<p class="empty-hint">Ingresa tu matrícula para cargar los grupos asignados.</p>';
+    estadoGlobal.gruposContainer.innerHTML = '<p class="empty-hint">Ingresa tu matrícula para cargar los grupos asignados.</p>';
   }
 
   function grupoCount() {
-    return gruposContainer.querySelectorAll('.grupo-line').length;
+    return estadoGlobal.gruposContainer.querySelectorAll('.grupo-line').length;
   }
 
-  // ── Búsqueda por matrícula ───────────────────────────────────────
   function buscarProfesor() {
     var mat = document.getElementById('matricula').value.trim();
     if (!mat) { document.getElementById('profesor').value = ''; return; }
@@ -348,13 +1062,13 @@
       if (res.aviso) showMsg(res.aviso, 'error');
 
       if (res.carga && res.carga.length > 0) {
-        gruposContainer.innerHTML = '';
+        estadoGlobal.gruposContainer.innerHTML = '';
         res.carga.forEach(function(item) {
           agregarGrupo({ grupo: item.grupo, asignatura: item.materia, esAutomatico: true });
         });
         showMsg('✅ Se cargaron ' + res.carga.length + ' grupos asignados.', 'success');
       } else {
-        gruposContainer.innerHTML = '';
+        estadoGlobal.gruposContainer.innerHTML = '';
         showMsg('⚠️ Sin materias asignadas en la Matriz. Agrégalas manualmente.', 'error');
         agregarGrupo({ esAutomatico: false });
       }
@@ -363,7 +1077,6 @@
 
   document.getElementById('matricula').addEventListener('change', buscarProfesor);
 
-  // ── Llenar selects manuales ──────────────────────────────────────
   function actualizarSelectsManuales() {
     var tipo = tipoSelect.value;
     if (!tipo) return;
@@ -399,7 +1112,6 @@
 
   tipoSelect.addEventListener('change', actualizarSelectsManuales);
 
-  // ── Validar links duplicados ─────────────────────────────────────
   function validarDuplicados() {
     var links = [];
     var hasDup = false;
@@ -424,17 +1136,15 @@
     return hasDup;
   }
 
-  // ── Agregar fila de grupo ────────────────────────────────────────
   function agregarGrupo(datos) {
     datos = datos || {};
 
-    if (grupoCount() >= MAX_GRUPOS) {
-      alert('Límite de ' + MAX_GRUPOS + ' grupos alcanzado.');
+    if (grupoCount() >= estadoGlobal.MAX_GRUPOS) {
+      alert('Límite de ' + estadoGlobal.MAX_GRUPOS + ' grupos alcanzado.');
       return;
     }
 
-    // Quitar hint vacío si existe
-    var hint = gruposContainer.querySelector('.empty-hint');
+    var hint = estadoGlobal.gruposContainer.querySelector('.empty-hint');
     if (hint) hint.remove();
 
     var div = document.createElement('div');
@@ -455,17 +1165,15 @@
       '<span class="status"></span>' +
       '<div class="remove-btn" title="Eliminar fila">✕</div>';
 
-    gruposContainer.appendChild(div);
+    estadoGlobal.gruposContainer.appendChild(div);
     div.scrollIntoView({ behavior: 'smooth', block: 'end' });
 
-    // Eliminar fila
     div.querySelector('.remove-btn').addEventListener('click', function() {
       div.style.opacity = '0';
       div.style.transition = 'opacity 0.2s';
       setTimeout(function() { div.remove(); validarDuplicados(); }, 200);
     });
 
-    // Validar link al salir del campo
     var linkInput = div.querySelector('.link');
     linkInput.addEventListener('blur', function() {
       var link   = linkInput.value.trim();
@@ -488,7 +1196,6 @@
       }).validarLink(link);
     });
 
-    // Llenar selects si ya hay tipo elegido
     if (!datos.esAutomatico && tipoSelect.value) {
       setTimeout(actualizarSelectsManuales, 100);
     }
@@ -498,7 +1205,6 @@
     agregarGrupo({ esAutomatico: false });
   });
 
-  // ── Importar ─────────────────────────────────────────────────────
   document.getElementById('importar').addEventListener('click', function() {
     if (validarDuplicados()) {
       showMsg('Corrige los links duplicados antes de importar.', 'error');
@@ -534,11 +1240,11 @@
     var originalHTML = btn.innerHTML;
     btn.disabled     = true;
     btn.innerHTML    = '⏳ PROCESANDO…';
-    msgArea.innerHTML = '';
+    estadoGlobal.msgArea.innerHTML = '';
 
     google.script.run
       .withSuccessHandler(function(res) {
-        msgArea.innerHTML =
+        estadoGlobal.msgArea.innerHTML =
           '<div class="msg-success"><b>' + res.mensajeFinal + '</b></div>' +
           '<div style="font-size:0.8rem;margin-top:5px;color:#555;">' +
           res.resumen.replace(/\n/g, '<br>') + '</div>';
@@ -553,13 +1259,12 @@
       .importarGruposWeb({ profesor: profesor, gruposLinks: gruposLinks, tipoGrupo: tipoGrupo });
   });
 
-  // ── Limpiar ───────────────────────────────────────────────────────
   document.getElementById('nuevoPanel').addEventListener('click', function() {
     if (confirm('¿Borrar formulario y empezar de cero?')) {
       document.getElementById('matricula').value = '';
       document.getElementById('profesor').value  = '';
       tipoSelect.value  = '';
-      msgArea.innerHTML = '';
+      estadoGlobal.msgArea.innerHTML = '';
       clearGrupos();
     }
   });
