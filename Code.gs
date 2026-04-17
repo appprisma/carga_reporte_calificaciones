@@ -691,3 +691,273 @@ function generarInformeVisualPro(silencioso) {
 function forzarPermisos() {
   UrlFetchApp.fetch("https://www.google.com");
 }
+// ═══════════════════════════════════════════════════════════════════════
+// AGREGAR AL FINAL DE Code.gs (después de la línea 694)
+// ═══════════════════════════════════════════════════════════════════════
+
+// ================================================================
+// 11. MÓDULO DE CONSULTA DE REPORTES — LOGIN & AUTENTICACIÓN
+// ================================================================
+
+/**
+ * Valida credenciales del profesor: Matrícula + Correo
+ * Retorna datos del profesor si es válido
+ */
+function validarLoginProfesor(matricula, correo) {
+  matricula = String(matricula).trim();
+  correo = String(correo).toLowerCase().trim();
+  
+  if (!matricula || !correo) {
+    return { ok: false, error: "Matrícula y correo son requeridos" };
+  }
+  
+  // Validar formato de correo
+  if (!correo.includes("@ibime.edu.mx")) {
+    return { ok: false, error: "Usa un correo institucional @ibime.edu.mx" };
+  }
+  
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var hojaMAestros = ss.getSheetByName(HOJAS.BASE_MAESTROS);
+    if (!hojaMAestros) {
+      return { ok: false, error: "Configuración incorrecta: falta " + HOJAS.BASE_MAESTROS };
+    }
+    
+    var data = hojaMAestros.getDataRange().getValues();
+    var headers = data[0].map(function(s) { return String(s).trim().toUpperCase(); });
+    var idxMat = headers.indexOf("MATRICULA PROFESOR");
+    var idxNombre = headers.indexOf("NOMBRE DEL PROFESOR");
+    var idxCorreo = headers.indexOf("CORREO") > -1 ? headers.indexOf("CORREO") : -1;
+    
+    if (idxMat === -1 || idxNombre === -1) {
+      return { ok: false, error: "Encabezados incorrectos en BASE MAESTROS" };
+    }
+    
+    // Buscar profesor por matrícula
+    for (var i = 1; i < data.length; i++) {
+      var matRow = String(data[i][idxMat]).trim();
+      if (matRow === matricula) {
+        var nombreProf = capitalizarNombre(String(data[i][idxNombre]).trim());
+        var correoRow = idxCorreo > -1 ? String(data[i][idxCorreo]).toLowerCase().trim() : "";
+        
+        // Validar correo (simple o exacto si existe en el sheet)
+        if (idxCorreo > -1 && correoRow && correoRow !== correo) {
+          return { ok: false, error: "Correo no coincide con la matrícula" };
+        }
+        
+        return {
+          ok: true,
+          matricula: matricula,
+          nombre: nombreProf,
+          correo: correo
+        };
+      }
+    }
+    
+    return { ok: false, error: "Matrícula no encontrada" };
+    
+  } catch (e) {
+    return { ok: false, error: "Error en validación: " + e.toString() };
+  }
+}
+
+// ================================================================
+// 12. OBTENER REPORTE DE PROFESOR (para la consulta)
+// ================================================================
+
+/**
+ * Obtiene todos los alumnos y sus calificaciones para un profesor
+ * Organizado por grupo y ordenado por estado de riesgo
+ */
+function obtenerReporteProfesor(matricula) {
+  matricula = String(matricula).trim();
+  
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var hojaMaestro = ss.getSheetByName(HOJAS.MAESTRO);
+    
+    if (!hojaMaestro) {
+      return { ok: false, error: "No hay datos cargados aún" };
+    }
+    
+    var data = hojaMaestro.getDataRange().getValues();
+    var alumnosMap = {};  // { correo: { nombre, grupo, materia, calificaciones: [] } }
+    
+    // Leer todas las filas del maestro
+    for (var i = 1; i < data.length; i++) {
+      var fila = data[i];
+      var profesor = String(fila[0]).trim();
+      var grupo = String(fila[1]).trim();
+      var alumno = String(fila[2]).trim();
+      var correo = String(fila[3]).toLowerCase().trim();
+      var calif = parseFloat(fila[6]) || 0;
+      var materia = String(fila[7]).trim();
+      
+      // Solo incluir registros del profesor que consulta
+      if (profesor.toLowerCase() !== _obtenerNombreProfesorPorMatricula(matricula).toLowerCase()) {
+        continue;
+      }
+      
+      if (!correo) continue;
+      
+      if (!alumnosMap[correo]) {
+        alumnosMap[correo] = {
+          nombre: alumno,
+          grupo: grupo,
+          materias: {},
+          calificaciones: [],
+          promedio: 0
+        };
+      }
+      
+      alumnosMap[correo].calificaciones.push(calif);
+      
+      if (!alumnosMap[correo].materias[materia]) {
+        alumnosMap[correo].materias[materia] = [];
+      }
+      alumnosMap[correo].materias[materia].push(calif);
+    }
+    
+    // Calcular promedios y estados
+    var alumnos = [];
+    for (var correoAl in alumnosMap) {
+      var al = alumnosMap[correoAl];
+      var promedio = al.calificaciones.length > 0
+        ? al.calificaciones.reduce(function(a, b) { return a + b; }, 0) / al.calificaciones.length
+        : 0;
+      promedio = parseFloat(promedio.toFixed(2));
+      
+      var estado = _obtenerEstadoCalificacion(promedio);
+      
+      alumnos.push({
+        correo: correoAl,
+        nombre: al.nombre,
+        grupo: al.grupo,
+        promedio: promedio,
+        estado: estado,
+        materias: al.materias,
+        totalCalificaciones: al.calificaciones.length
+      });
+    }
+    
+    // Ordenar de peor a mejor (CRÍTICO primero)
+    alumnos.sort(function(a, b) {
+      var ordenEstatus = { "Crítico": 0, "En Riesgo": 1, "Satisfactorio": 2, "Excelente": 3 };
+      return ordenEstatus[a.estado.texto] - ordenEstatus[b.estado.texto];
+    });
+    
+    // Obtener resumen de grupos
+    var gruposSet = {};
+    for (var ii = 1; ii < data.length; ii++) {
+      var prof = String(data[ii][0]).trim();
+      var grp = String(data[ii][1]).trim();
+      var mat = String(data[ii][7]).trim();
+      
+      if (prof.toLowerCase() === _obtenerNombreProfesorPorMatricula(matricula).toLowerCase()) {
+        if (!gruposSet[grp]) gruposSet[grp] = new Set();
+        gruposSet[grp].add(mat);
+      }
+    }
+    
+    // Construir resumen de grupos (similar a auditoría)
+    var resumenGrupos = [];
+    for (var gname in gruposSet) {
+      resumenGrupos.push({
+        grupo: gname,
+        materias: Array.from(gruposSet[gname]),
+        status: "✅ Completado"  // Puedes mejorar esto verificando si falta algo
+      });
+    }
+    
+    return {
+      ok: true,
+      alumnos: alumnos,
+      gruposResumen: resumenGrupos,
+      totalAlumnos: alumnos.length
+    };
+    
+  } catch (e) {
+    return { ok: false, error: "Error al obtener reporte: " + e.toString() };
+  }
+}
+
+// ================================================================
+// 13. HELPERS PARA ESTADOS Y CÁLCULOS
+// ================================================================
+
+function _obtenerEstadoCalificacion(valor) {
+  valor = parseFloat(valor) || 0;
+  
+  if (valor >= 9) {
+    return { emoji: "😎", texto: "Excelente", color: "#3B82F6" };
+  }
+  if (valor >= 8) {
+    return { emoji: "🙂", texto: "Satisfactorio", color: "#10B981" };
+  }
+  if (valor >= 6) {
+    return { emoji: "⚠️", texto: "En Riesgo", color: "#F59E0B" };
+  }
+  return { emoji: "😓", texto: "Crítico", color: "#EF4444" };
+}
+
+function _obtenerNombreProfesorPorMatricula(matricula) {
+  var res = obtenerNombreProfesor(matricula);
+  return res.ok ? res.nombre : "";
+}
+
+// ================================================================
+// 14. GUARDAR COMENTARIO DE PROFESOR (Firebase)
+// ================================================================
+
+/**
+ * Guarda un comentario opcional del profesor sobre un alumno
+ * Se almacena en Firebase bajo /comentarios_docentes
+ */
+function guardarComentarioAlumno(matriculaProf, correoAlumno, comentario) {
+  matriculaProf = String(matriculaProf).trim();
+  correoAlumno = String(correoAlumno).toLowerCase().trim();
+  comentario = String(comentario || "").trim();
+  
+  if (!comentario) return { ok: false, error: "Comentario vacío" };
+  if (comentario.length > 500) return { ok: false, error: "Comentario muy largo (máx 500 caracteres)" };
+  
+  try {
+    var config = _getFirebaseConfig();
+    if (!config.url || !config.secret) {
+      return { ok: false, error: "Firebase no configurado" };
+    }
+    
+    var payload = {};
+    var clave = _sanitizarClave(correoAlumno + "_" + matriculaProf);
+    
+    payload[clave] = {
+      matriculaProfesor: matriculaProf,
+      correoAlumno: correoAlumno,
+      comentario: comentario,
+      timestamp: new Date().toISOString()
+    };
+    
+    var resp = UrlFetchApp.fetch(
+      config.url + "comentarios_docentes.json?auth=" + config.secret,
+      {
+        method: "patch",
+        contentType: "application/json",
+        payload: JSON.stringify(payload),
+        muteHttpExceptions: true
+      }
+    );
+    
+    if (resp.getResponseCode() === 200) {
+      return { ok: true, mensaje: "Comentario guardado" };
+    } else {
+      return { ok: false, error: "Error al guardar en Firebase" };
+    }
+    
+  } catch (e) {
+    return { ok: false, error: e.toString() };
+  }
+}
+
+function _sanitizarClave(str) {
+  return str.replace(/[.#$\[\]\/]/g, "_");
+}
